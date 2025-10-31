@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, MicOff, Volume2, Save, StopCircle, Trash, Play } from "lucide-react";
+import { Mic, MicOff, Volume2, Save, StopCircle, Trash, Play, FileText, CheckCircle2, X, Video } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -266,24 +266,44 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
 
           {/* Video Preview Dialog */}
           <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Recorded Video Preview</DialogTitle>
+            <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+              <DialogHeader className="pb-4 border-b flex-shrink-0">
+                <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Video className="h-5 w-5 text-primary" />
+                  </div>
+                  Recorded Video Preview
+                </DialogTitle>
               </DialogHeader>
               {previewUrl && (
-                <div className="space-y-4">
-                  <video src={previewUrl} controls className="w-full rounded-md" />
+                <div className="flex-1 min-h-0 flex flex-col space-y-4 pt-4">
+                  {/* Video Player Section */}
+                  <div className="relative group flex-shrink-0">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg pointer-events-none z-10" />
+                    <video 
+                      src={previewUrl} 
+                      controls 
+                      className="w-full rounded-lg shadow-lg bg-black aspect-video object-contain max-h-[50vh]"
+                    />
+                  </div>
+                  
+                  {/* Transcript Section - Scrollable */}
                   {previewTranscript && (
-                    <div className="rounded-md bg-background p-3 border">
-                      <p className="text-sm font-medium mb-2">Transcribed Text:</p>
-                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {previewTranscript}
-                      </p>
+                    <div className="flex-1 min-h-0 flex flex-col rounded-lg bg-gradient-to-br from-background to-muted/30 border shadow-sm overflow-hidden">
+                      <div className="flex items-center gap-2 mb-3 p-4 pb-3 flex-shrink-0 border-b">
+                        <div className="p-1.5 bg-primary/10 rounded-md">
+                          <FileText className="h-4 w-4 text-primary" />
+                        </div>
+                        <h3 className="text-base font-semibold">Transcribed Text</h3>
+                     
+                      </div>
+                      <div className="flex-1 min-h-0 overflow-y-auto bg-background/80 p-4">
+                        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                          {previewTranscript}
+                        </p>
+                      </div>
                     </div>
                   )}
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
-                  </div>
                 </div>
               )}
             </DialogContent>

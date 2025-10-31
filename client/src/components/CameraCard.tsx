@@ -1,8 +1,9 @@
 // In CameraCard.tsx - Update to make internal components responsive
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Video, VideoOff, Square, PlayCircle } from "lucide-react";
+import { Video, VideoOff, Square, PlayCircle, FileText, CheckCircle2, X, Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function CameraCard({ className = "", onSaveVideoAnswer, speechLang }: { className?: string; onSaveVideoAnswer?: (videoUrl: string, transcript?: string) => void; speechLang?: string }) {
@@ -190,7 +191,7 @@ export default function CameraCard({ className = "", onSaveVideoAnswer, speechLa
                 </>
               ) : (
                 <>
-                  <PlayCircle className="h-4 w-4" />
+                  <Video className="h-4 w-4" />
                   Record Video Answer
                 </>
               )}
@@ -199,22 +200,61 @@ export default function CameraCard({ className = "", onSaveVideoAnswer, speechLa
         </div>
       </CardContent>
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Recorded Video Preview</DialogTitle>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+          <DialogHeader className="pb-4 border-b flex-shrink-0">
+            <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Video className="h-5 w-5 text-primary" />
+              </div>
+              Recorded Video Preview
+            </DialogTitle>
           </DialogHeader>
           {previewUrl && (
-            <div className="space-y-4">
-              <video src={previewUrl} controls className="w-full rounded-md" />
-              <div className="rounded-md bg-background p-3 border">
-                <p className="text-sm font-medium mb-2">Transcribed Text:</p>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap min-h-[40px]">
-                  {previewTranscript || "No transcript available. Please ensure your microphone is enabled and try again."}
-                </p>
+            <div className="flex-1 min-h-0 flex flex-col space-y-4 pt-4">
+              {/* Video Player Section */}
+              <div className="relative group flex-shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg pointer-events-none z-10" />
+                <video 
+                  src={previewUrl} 
+                  controls 
+                  className="w-full rounded-lg shadow-lg bg-black aspect-video object-contain max-h-[50vh]"
+                />
               </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
-                <Button onClick={saveRecorded}>Add to My Answers</Button>
+              
+              {/* Transcript Section - Scrollable */}
+              <div className="flex-1 min-h-0 flex flex-col rounded-lg bg-gradient-to-br from-background to-muted/30 border shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 mb-3 p-4 pb-3 flex-shrink-0 border-b">
+                  <div className="p-1.5 bg-primary/10 rounded-md">
+                    <FileText className="h-4 w-4 text-primary" />
+                  </div>
+                  <h3 className="text-base font-semibold">Transcribed Text</h3>
+                  {previewTranscript && (
+                    <Badge variant="secondary" className="ml-auto text-xs">
+                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      Available
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex-1 min-h-0 overflow-y-auto bg-background/80 p-4">
+                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                    {previewTranscript || (
+                      <span className="text-muted-foreground italic">
+                        No transcript available. Please ensure your microphone is enabled and try again.
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-2 border-t flex-shrink-0">
+                <Button 
+                  onClick={saveRecorded}
+                  className="gap-2 bg-primary hover:bg-primary/90"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Add to My Answers
+                </Button>
               </div>
             </div>
           )}
