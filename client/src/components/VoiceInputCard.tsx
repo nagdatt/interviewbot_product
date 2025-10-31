@@ -165,10 +165,10 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, c
           </TabsContent>
 
           {/* My Answers Tab Content - Full width with proper height management */}
-      <TabsContent value="my-answers" className="mt-2 flex-1 min-h-0 p-0 ">
-  <div className="h-full px-4 min-h-0 resize-none w-full ">
-    <ScrollArea className="h-full w-full ">
-      <div className="space-y-3 w-full py-2 h-full min-h-0 resize-none w-full ">
+      <TabsContent value="my-answers" className="mt-4 flex-1 min-h-0 flex flex-col p-6 pt-0">
+  <div className="flex-1 min-h-0">
+    <ScrollArea className="h-full w-full">
+      <div className="space-y-3 w-full py-2">
         {savedAnswers.length === 0 ? (
           <div className="flex items-center justify-center h-full min-h-[100px] w-full">
             <p className="text-sm text-muted-foreground text-center">

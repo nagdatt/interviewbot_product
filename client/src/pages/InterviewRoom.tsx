@@ -33,7 +33,7 @@ export default function InterviewRoom() {
   const [savedAnswers, setSavedAnswers] = useState<SavedAnswer[]>([]);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [showTimer, setShowTimer] = useState(false); // Hidden by default
+  const [showTimer, setShowTimer] = useState(true); // Hidden by default
   const [interviewDuration] = useState(currentInterviewSetup?.duration ? parseInt(currentInterviewSetup.duration) * 60 : 3600); // Default 60 minutes
 
   useEffect(() => {
@@ -52,14 +52,14 @@ export default function InterviewRoom() {
     const timer = setInterval(() => {
       setTimeElapsed(prev => {
         const newTime = prev + 1;
-        
+
         // Check if interview time is up
         if (newTime >= interviewDuration) {
           clearInterval(timer);
           handleAutoEndInterview();
           return interviewDuration;
         }
-        
+
         return newTime;
       });
     }, 1000);
@@ -73,7 +73,7 @@ export default function InterviewRoom() {
     const question = questionsForTab.find((q) => q.id === questionId);
     setSelectedQuestion(question || null);
     setAnswer("");
-    
+
     if (question?.type === "coding") {
       setShowCodeEditor(true);
     }
@@ -88,20 +88,20 @@ export default function InterviewRoom() {
         timestamp: new Date().toISOString(),
         type: selectedQuestion.type,
       };
-      
+
       setSavedAnswers(prev => [newAnswer, ...prev]);
-      
+
       saveAnswer({
         questionId: selectedQuestion.id,
         answer,
         type: selectedQuestion.type,
       });
-      
+
       toast({
         title: "Answer Saved",
         description: "Your response has been recorded",
       });
-      
+
       setAnswer("");
     }
   };
@@ -115,15 +115,15 @@ export default function InterviewRoom() {
         timestamp: new Date().toISOString(),
         type: selectedQuestion.type,
       };
-      
+
       setSavedAnswers(prev => [newAnswer, ...prev]);
-      
+
       saveAnswer({
         questionId: selectedQuestion.id,
         answer: voiceAnswer,
         type: selectedQuestion.type,
       });
-      
+
       toast({
         title: "Voice Answer Saved",
         description: "Your response has been recorded",
@@ -167,7 +167,7 @@ export default function InterviewRoom() {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
@@ -208,7 +208,7 @@ export default function InterviewRoom() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 justify-between sm:justify-normal">
                   {isTimeRunningOut() && (
                     <Badge variant="destructive" className="gap-1 animate-pulse text-xs">
@@ -216,24 +216,22 @@ export default function InterviewRoom() {
                       Time Running Out
                     </Badge>
                   )}
-                  
+
                   <div className="text-right">
-                    <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${
-                      isTimeRunningOut() ? 'text-destructive' : 'text-primary'
-                    }`}>
+                    <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${isTimeRunningOut() ? 'text-destructive' : 'text-primary'
+                      }`}>
                       {formatTime(getTimeRemaining())}
                     </div>
                     <div className="text-xs sm:text-sm text-muted-foreground">
                       Time Remaining
                     </div>
                   </div>
-                  
+
                   <div className="w-20 sm:w-32">
                     <div className="h-1.5 sm:h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-1000 ${
-                          isTimeRunningOut() ? 'bg-destructive' : 'bg-primary'
-                        }`}
+                      <div
+                        className={`h-full transition-all duration-1000 ${isTimeRunningOut() ? 'bg-destructive' : 'bg-primary'
+                          }`}
                         style={{ width: `${getProgressPercentage()}%` }}
                       />
                     </div>
@@ -259,12 +257,12 @@ export default function InterviewRoom() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-4 sm:gap-6 min-h-0">
           {/* Left Panel - Two equal height rows on desktop, stacked on mobile */}
-<div className="flex flex-col gap-4 sm:gap-6 lg:h-[calc(100vh-140px)]">
-  <div className="lg:flex-[0.6] lg:min-h-0">
+          <div className="flex flex-col gap-4 sm:gap-6 lg:h-[calc(100vh-140px)]">
+            <div className="lg:flex-[0.6] lg:min-h-0">
               <CameraCard className="h-full min-h-[200px] sm:min-h-[250px] lg:min-h-0" />
             </div>
             <div className="lg:flex-[0.5] lg:min-h-0">
-              <VoiceInputCard 
+              <VoiceInputCard
                 className="h-full min-h-[300px] sm:min-h-[350px] lg:min-h-0"
                 savedAnswers={savedAnswers}
                 onSaveVoiceAnswer={handleSaveVoiceAnswer}
@@ -309,7 +307,7 @@ export default function InterviewRoom() {
                     <TabsTrigger value="hr" data-testid="tab-hr" className="text-xs sm:text-sm">HR</TabsTrigger>
                     <TabsTrigger value="coding" data-testid="tab-coding" className="text-xs sm:text-sm">Coding</TabsTrigger>
                   </TabsList>
-                  
+
                   <TabsContent value="technical" className="mt-3 sm:mt-4 h-[calc(100%-40px)] sm:h-[calc(100%-50px)]">
                     <QuestionList
                       questions={questionsForTab}
@@ -318,7 +316,7 @@ export default function InterviewRoom() {
                       className="h-full"
                     />
                   </TabsContent>
-                  
+
                   <TabsContent value="hr" className="mt-3 sm:mt-4 h-[calc(100%-40px)] sm:h-[calc(100%-50px)]">
                     <QuestionList
                       questions={questionsForTab}
@@ -327,7 +325,7 @@ export default function InterviewRoom() {
                       className="h-full"
                     />
                   </TabsContent>
-                  
+
                   <TabsContent value="coding" className="mt-3 sm:mt-4 h-[calc(100%-40px)] sm:h-[calc(100%-50px)]">
                     <QuestionList
                       questions={questionsForTab}
