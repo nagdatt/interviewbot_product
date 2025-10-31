@@ -33,7 +33,7 @@ export default function InterviewRoom() {
   const [savedAnswers, setSavedAnswers] = useState<SavedAnswer[]>([]);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [showTimer, setShowTimer] = useState(false); // Hidden by default
+  const [showTimer, setShowTimer] = useState(true); // Hidden by default
   const [interviewDuration] = useState(currentInterviewSetup?.duration ? parseInt(currentInterviewSetup.duration) * 60 : 3600); // Default 60 minutes
 
   useEffect(() => {
@@ -190,7 +190,7 @@ export default function InterviewRoom() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* <Navbar /> */}
+      <Navbar />
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Timer Header with Toggle Button */}
         {showTimer && (
