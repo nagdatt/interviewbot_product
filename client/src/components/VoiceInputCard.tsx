@@ -106,7 +106,7 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
   return (
     <Card className={`overflow-hidden backdrop-blur-md bg-card/70 border-card-border flex flex-col ${className}`}>
       <CardHeader className="pb-3 flex-shrink-0">
-        <CardTitle className="text-lg">Answer Panel</CardTitle>
+        <CardTitle className="text-text-sm sm:text-base">Answer Panel</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
         <Tabs defaultValue="answers" className="w-full h-full flex flex-col">
