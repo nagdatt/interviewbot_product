@@ -1,0 +1,181 @@
+Build a **responsive Interview Bot web app** using **React + Material UI v5** as the UI base, with custom CSS (or styled-components) for brand styling (glassmorphism + gradient tones).  
+
+---
+
+### 🎯 Core Objective:
+Create a professional, responsive **AI Interview Bot platform** for candidates to practice mock interviews, code live, track performance, and analyze results.
+
+---
+
+### 🧩 Pages & Flow
+
+#### 1. **Login / Signup Page**
+- Clean MUI card layout (centered).  
+- Email, password, confirm password fields.  
+- Toggle between Login and Signup mode.  
+- Form validation and error handling.  
+- On success → navigate to Home page.
+
+---
+
+#### 2. **Top Navigation Bar (Persistent)**
+- Fixed MUI `AppBar` with brand logo/title on the left.  
+- Buttons (right side):  
+  - 🏠 Home  
+  - 📄 Personal Details  
+  - 🕓 Interview History  
+- Responsive collapsible menu for mobile view.  
+- User Avatar (click to edit profile).  
+
+---
+
+#### 3. **Home Page**
+- Welcome text + “Start Interview” button.
+- When clicked → open **Interview Setup Page**.
+
+---
+
+#### 4. **Interview Setup Page (Before entering Interview Room)**
+Ask candidate for:
+- Company name (text input)
+- Expected package (numeric input)
+- Multi-select **Tech Stacks** (React, Node.js, Python, C++, etc.)
+- Interview duration (dropdown)
+- Start Interview button → navigates to **Interview Room** page, storing details in state.
+
+---
+
+#### 5. **Personal Details Page**
+- Section for uploading **Resume (PDF)**  
+- Add personal skills, projects, experience text areas.  
+- Upload profile DP popup appears when editing name/email.  
+- All data stored in Context or mock JSON backend.
+
+---
+
+#### 6. **Interview Room Page (Main Practice Environment)**
+**Layout:** Two-column responsive grid.
+
+##### Left Column:
+- **Camera Card**: Display live webcam feed (`navigator.mediaDevices.getUserMedia`).
+- **Voice Input Card**: Start/stop speech-to-text (Web Speech API) with live transcription box.
+
+##### Right Column:
+Tabs for:
+1. **Technical Questions**
+2. **HR Questions**
+3. **Coding**
+
+Each tab contains:
+- Scrollable **Question List** with pagination (no next/previous buttons).
+- On selecting a question:
+  - For Technical/HR → display question and text area for answer.
+  - For Coding → open **Code Editor** (Monaco or CodeMirror) below the selected question.
+    - Language selector (Python, JS, C++)
+    - Test case section (input/output)
+    - “Run Code” button with simulated output.
+
+At bottom:
+- “End Interview” button → navigates to **Interview Analysis** page.
+
+---
+
+#### 7. **Interview Analysis Page**
+- Displays metrics cards:
+  - Accuracy %
+  - Time Taken
+  - Communication Score (from voice)
+  - Coding Test Results
+- Include a chart (Recharts or MUI Charts).
+- Button: “View Interview History”.
+
+---
+
+#### 8. **Interview History Page**
+- Table or card list showing:
+  - Interview Date
+  - Company Name
+  - Tech Stack
+  - Score Summary
+  - Button: “View Detailed Analysis” (opens that interview’s report).
+- Responsive layout with pagination.
+
+---
+
+### ⚙️ Functional Requirements
+- React Router v6 for navigation.
+- Context API or Redux Toolkit for state.
+- Material UI theming (light/dark toggle).
+- Framer Motion for subtle transitions.
+- Camera + Mic permission handling.
+- Voice input → real-time transcription using Web Speech API.
+- LocalStorage for mock persistence of interviews.
+- Custom CSS overrides:  
+  - Rounded corners  
+  - Gradient buttons (blue → purple)  
+  - Slight blur backgrounds (glassmorphism)
+
+---
+
+### 🧪 Bonus Touches
+- Animated loader while starting the interview.
+- Floating chat icon (future AI interviewer integration placeholder).
+- Responsive design verified on mobile, tablet, and desktop.
+
+---
+
+### 🧱 Folder Structure
+src/
+├── components/
+│ ├── Navbar.jsx
+│ ├── CameraCard.jsx
+│ ├── VoiceInputCard.jsx
+│ ├── CodingEditor.jsx
+│ └── QuestionList.jsx
+├── pages/
+│ ├── Login.jsx
+│ ├── Home.jsx
+│ ├── InterviewSetup.jsx
+│ ├── InterviewRoom.jsx
+│ ├── Analysis.jsx
+│ ├── History.jsx
+│ └── PersonalDetails.jsx
+├── context/
+│ └── AppContext.jsx
+├── utils/
+│ ├── sampleQuestions.js
+│ └── speechUtils.js
+├── styles/
+│ └── theme.js
+├── App.js
+├── main.jsx
+
+yaml
+Copy code
+
+---
+
+### 🧠 Output Requirements:
+- Generate **complete React app code** (JSX + CSS) with working routing and mock data.
+- Include responsive design, pagination, and question-based IDE logic.
+- Code should be **well-commented, clean, and modular**.
+
+---
+
+### ⚡ Tech Stack Summary
+- React 18
+- Material UI v5
+- React Router v6
+- CodeMirror or Monaco Editor
+- Web Speech API (voice typing)
+- getUserMedia (camera)
+- Recharts (analysis charts)
+- Context API (global state)
+- Framer Motion (animations)
+
+---
+
+Now generate the **full React project** step-by-step implementing this specification, starting with:
+1️⃣ Project setup and folder structure,  
+2️⃣ Routing + Navbar,  
+3️⃣ Login + Home + InterviewSetup pages.
