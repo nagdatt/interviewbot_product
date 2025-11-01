@@ -154,6 +154,19 @@ export default function InterviewRoom() {
     }
   };
 
+  const handleDeleteAnswer = (index: number) => {
+    setSavedAnswers(prev => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      return updated;
+    });
+
+    toast({
+      title: "Answer Deleted",
+      description: "The answer has been removed from your list",
+    });
+  };
+
   const handleAutoEndInterview = () => {
     toast({
       title: "Time's Up!",
@@ -290,6 +303,7 @@ export default function InterviewRoom() {
                 savedAnswers={savedAnswers}
                 onSaveVoiceAnswer={handleSaveVoiceAnswer}
                 onSaveVideoAnswer={handleSaveVideoAnswer}
+                onDeleteAnswer={handleDeleteAnswer}
                 currentQuestion={selectedQuestion ? {
                   id: selectedQuestion.id,
                   title: selectedQuestion.title,

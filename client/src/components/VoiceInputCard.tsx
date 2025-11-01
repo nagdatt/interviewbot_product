@@ -8,6 +8,16 @@ import { Mic, MicOff, Volume2, Save, StopCircle, Trash, Play, FileText, CheckCir
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SavedAnswer {
   questionId: string;
@@ -23,11 +33,12 @@ interface VoiceInputCardProps {
   savedAnswers?: SavedAnswer[];
   onSaveVoiceAnswer?: (answer: string) => void;
   onSaveVideoAnswer?: (videoUrl: string) => void;
+  onDeleteAnswer?: (index: number) => void;
   currentQuestion?: { id: string; title: string; type: "technical" | "hr" | "coding" } | null;
   className?: string;
 }
 
-export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, onSaveVideoAnswer, currentQuestion, className }: VoiceInputCardProps) {
+export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, onSaveVideoAnswer, onDeleteAnswer, currentQuestion, className }: VoiceInputCardProps) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
@@ -36,6 +47,8 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewSource, setPreviewSource] = useState<"recording" | "existing">("recording");
   const [speakingAnswerIndex, setSpeakingAnswerIndex] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [answerToDeleteIndex, setAnswerToDeleteIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -267,6 +280,11 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
                     size="sm"
                     variant="outline"
                     className="gap-2 text-xs !border-red-500 !text-red-500 hover:!bg-red-50"
+                    onClick={() => {
+                      setAnswerToDeleteIndex(index);
+                      setDeleteDialogOpen(true);
+                    }}
+                    data-testid={`button-delete-${index}`}
                   >
                     <Trash className="h-3 w-3" />
                     Delete
@@ -325,6 +343,44 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
               )}
             </DialogContent>
           </Dialog>
+
+          {/* Delete Confirmation Dialog */}
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Answer?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete this answer? This action cannot be undone.
+                  {answerToDeleteIndex !== null && savedAnswers[answerToDeleteIndex] && (
+                    <span className="block mt-2 font-medium text-foreground">
+                      Question: {savedAnswers[answerToDeleteIndex].questionTitle}
+                    </span>
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    if (answerToDeleteIndex !== null && onDeleteAnswer) {
+                      // Stop speaking if this answer is currently being spoken
+                      if (speakingAnswerIndex === answerToDeleteIndex) {
+                        if ('speechSynthesis' in window) {
+                          speechSynthesis.cancel();
+                          setSpeakingAnswerIndex(null);
+                        }
+                      }
+                      onDeleteAnswer(answerToDeleteIndex);
+                      setAnswerToDeleteIndex(null);
+                    }
+                  }}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </Tabs>
       </CardContent>
     </Card>
