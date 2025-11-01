@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, MicOff, Volume2, Save, StopCircle, Trash } from "lucide-react";
+import { Mic, MicOff, Volume2, Save, StopCircle, Trash, Play, FileText, CheckCircle2, X, Video } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface SavedAnswer {
   questionId: string;
@@ -14,19 +15,26 @@ interface SavedAnswer {
   answer: string;
   timestamp: string;
   type: "technical" | "hr" | "coding";
+  videoUrl?: string;
+  transcript?: string;
 }
 
 interface VoiceInputCardProps {
   savedAnswers?: SavedAnswer[];
   onSaveVoiceAnswer?: (answer: string) => void;
+  onSaveVideoAnswer?: (videoUrl: string) => void;
   currentQuestion?: { id: string; title: string; type: "technical" | "hr" | "coding" } | null;
   className?: string;
 }
 
-export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, currentQuestion, className }: VoiceInputCardProps) {
+export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, onSaveVideoAnswer, currentQuestion, className }: VoiceInputCardProps) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTranscript, setPreviewTranscript] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewSource, setPreviewSource] = useState<"recording" | "existing">("recording");
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -98,7 +106,7 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, c
   return (
     <Card className={`overflow-hidden backdrop-blur-md bg-card/70 border-card-border flex flex-col ${className}`}>
       <CardHeader className="pb-3 flex-shrink-0">
-        <CardTitle className="text-lg">Answer Panel</CardTitle>
+        <CardTitle className="text-text-sm sm:text-base">Answer Panel</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
         <Tabs defaultValue="answers" className="w-full h-full flex flex-col">
@@ -193,10 +201,28 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, c
                   </div>
                 </div>
                 
-                <div className="rounded-md bg-background p-2 border w-full max-h-40 overflow-y-auto">
-                  <p className="text-sm whitespace-pre-wrap">
-                    {answer.answer || "No answer provided"}
-                  </p>
+                <div className="space-y-2">
+                  {answer.videoUrl && (
+                    <button
+                      className="w-full aspect-video bg-black/80 rounded-md flex items-center justify-center text-white mb-2"
+                      onClick={() => { 
+                        setPreviewUrl(answer.videoUrl!); 
+                        setPreviewTranscript(answer.transcript || null);
+                        setPreviewSource("existing"); 
+                        setIsPreviewOpen(true); 
+                      }}
+                    >
+                      <Play className="h-6 w-6 mr-2" />
+                      <span className="text-xs">View recorded video</span>
+                    </button>
+                  )}
+                  {(answer.transcript || answer.answer) && (
+                    <div className="rounded-md bg-background p-2 border w-full max-h-40 overflow-y-auto">
+                      <p className="text-sm whitespace-pre-wrap">
+                        {answer.transcript || answer.answer || "No answer provided"}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-2 flex-wrap">
@@ -237,6 +263,51 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, c
     </ScrollArea>
   </div>
 </TabsContent>
+
+          {/* Video Preview Dialog */}
+          <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+            <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+              <DialogHeader className="pb-4 border-b flex-shrink-0">
+                <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Video className="h-5 w-5 text-primary" />
+                  </div>
+                  Recorded Video Preview
+                </DialogTitle>
+              </DialogHeader>
+              {previewUrl && (
+                <div className="flex-1 min-h-0 flex flex-col space-y-4 pt-4">
+                  {/* Video Player Section */}
+                  <div className="relative group flex-shrink-0">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg pointer-events-none z-10" />
+                    <video 
+                      src={previewUrl} 
+                      controls 
+                      className="w-full rounded-lg shadow-lg bg-black aspect-video object-contain max-h-[50vh]"
+                    />
+                  </div>
+                  
+                  {/* Transcript Section - Scrollable */}
+                  {previewTranscript && (
+                    <div className="flex-1 min-h-0 flex flex-col rounded-lg bg-gradient-to-br from-background to-muted/30 border shadow-sm overflow-hidden">
+                      <div className="flex items-center gap-2 mb-3 p-4 pb-3 flex-shrink-0 border-b">
+                        <div className="p-1.5 bg-primary/10 rounded-md">
+                          <FileText className="h-4 w-4 text-primary" />
+                        </div>
+                        <h3 className="text-base font-semibold">Transcribed Text</h3>
+                     
+                      </div>
+                      <div className="flex-1 min-h-0 overflow-y-auto bg-background/80 p-4">
+                        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                          {previewTranscript}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </Tabs>
       </CardContent>
     </Card>

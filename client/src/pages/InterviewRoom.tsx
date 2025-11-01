@@ -20,6 +20,8 @@ interface SavedAnswer {
   answer: string;
   timestamp: string;
   type: "technical" | "hr" | "coding";
+  videoUrl?: string;
+  transcript?: string;
 }
 
 export default function InterviewRoom() {
@@ -131,6 +133,27 @@ export default function InterviewRoom() {
     }
   };
 
+  const handleSaveVideoAnswer = (videoUrl: string, transcript?: string) => {
+    if (selectedQuestion && videoUrl) {
+      const newAnswer: SavedAnswer = {
+        questionId: selectedQuestion.id,
+        questionTitle: selectedQuestion.title,
+        answer: transcript || "", // textual answer from transcript or empty
+        timestamp: new Date().toISOString(),
+        type: selectedQuestion.type,
+        videoUrl,
+        transcript: transcript || "",
+      };
+
+      setSavedAnswers(prev => [newAnswer, ...prev]);
+
+      toast({
+        title: "Video Answer Saved",
+        description: "Your video response has been added to My Answers",
+      });
+    }
+  };
+
   const handleAutoEndInterview = () => {
     toast({
       title: "Time's Up!",
@@ -190,7 +213,7 @@ export default function InterviewRoom() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Timer Header with Toggle Button */}
         {showTimer && (
@@ -258,14 +281,15 @@ export default function InterviewRoom() {
         <div className="grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-4 sm:gap-6 min-h-0">
           {/* Left Panel - Two equal height rows on desktop, stacked on mobile */}
           <div className="flex flex-col gap-4 sm:gap-6 lg:h-[calc(100vh-140px)]">
-            <div className="lg:flex-[0.6] lg:min-h-0">
-              <CameraCard className="h-full min-h-[200px] sm:min-h-[250px] lg:min-h-0" />
+            <div className="lg:flex-[0.5] lg:min-h-0">
+              <CameraCard className="h-full min-h-[200px] sm:min-h-[250px] lg:min-h-0" onSaveVideoAnswer={handleSaveVideoAnswer} speechLang={(navigator.language || "en-US")} />
             </div>
             <div className="lg:flex-[0.5] lg:min-h-0">
               <VoiceInputCard
                 className="h-full min-h-[300px] sm:min-h-[350px] lg:min-h-0"
                 savedAnswers={savedAnswers}
                 onSaveVoiceAnswer={handleSaveVoiceAnswer}
+                onSaveVideoAnswer={handleSaveVideoAnswer}
                 currentQuestion={selectedQuestion ? {
                   id: selectedQuestion.id,
                   title: selectedQuestion.title,
