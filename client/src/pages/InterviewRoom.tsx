@@ -213,7 +213,7 @@ export default function InterviewRoom() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Timer Header with Toggle Button */}
         {showTimer && (
