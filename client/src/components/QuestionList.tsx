@@ -11,9 +11,10 @@ interface QuestionListProps {
   questions: Question[];
   selectedQuestionId?: string;
   onSelectQuestion: (questionId: string) => void;
+  className?: string;
 }
 
-export default function QuestionList({ questions, selectedQuestionId, onSelectQuestion }: QuestionListProps) {
+export default function QuestionList({ questions, selectedQuestionId, onSelectQuestion, className }: QuestionListProps) {
   const [showAnswers, setShowAnswers] = useState<Record<string, boolean>>({});
 
   const toggleAnswer = (questionId: string, e: React.MouseEvent) => {
@@ -22,7 +23,7 @@ export default function QuestionList({ questions, selectedQuestionId, onSelectQu
   };
 
   return (
-   <ScrollArea className="h-full">
+   <ScrollArea className={cn("h-full", className)}>
   <div className="space-y-2 pr-4 pb-4">
         {questions.map((question) => (
           <Card

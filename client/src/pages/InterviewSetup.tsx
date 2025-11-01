@@ -366,7 +366,7 @@ export default function InterviewSetup() {
                           <SelectValue placeholder="Select duration" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="30">30 minutes</SelectItem>
+                          <SelectItem value="6">6 minutes</SelectItem>
                           <SelectItem value="45">45 minutes</SelectItem>
                           <SelectItem value="60">60 minutes</SelectItem>
                           <SelectItem value="90">90 minutes</SelectItem>

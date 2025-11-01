@@ -247,7 +247,7 @@ export default function CameraCard({ className = "", onSaveVideoAnswer, speechLa
               </div>
               
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-2 border-t flex-shrink-0">
+              <div className="flex items-center justify-end gap-3 pt-2  flex-shrink-0">
                 <Button 
                   onClick={saveRecorded}
                   className="gap-2 bg-primary hover:bg-primary/90"

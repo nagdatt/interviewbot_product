@@ -35,6 +35,7 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
   const [previewTranscript, setPreviewTranscript] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewSource, setPreviewSource] = useState<"recording" | "existing">("recording");
+  const [speakingAnswerIndex, setSpeakingAnswerIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -71,6 +72,15 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
     };
   }, []);
 
+  // Cleanup: Stop speaking when component unmounts
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const toggleListening = () => {
     if (isListening) {
       recognitionRef.current?.stop();
@@ -88,18 +98,27 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
     }
   };
 
-  const speakAnswer = (text: string) => {
+  const toggleSpeakAnswer = (text: string, index: number) => {
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
-    }
-  };
-
-  const stopSpeaking = () => {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
+      // If already speaking this answer, stop it
+      if (speakingAnswerIndex === index) {
+        speechSynthesis.cancel();
+        setSpeakingAnswerIndex(null);
+      } else {
+        // Stop any currently playing audio
+        speechSynthesis.cancel();
+        // Start speaking the new answer
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          setSpeakingAnswerIndex(null);
+        };
+        utterance.onerror = () => {
+          setSpeakingAnswerIndex(null);
+        };
+        speechSynthesis.speak(utterance);
+        setSpeakingAnswerIndex(index);
+      }
     }
   };
 
@@ -187,37 +206,36 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
           savedAnswers.map((answer, index) => (
             <Card key={index} className="bg-muted/50 w-full">
               <CardContent className="p-3 space-y-2">
-                <div className="flex items-start justify-between gap-2 w-full">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h4 className="font-semibold text-sm">{answer.questionTitle}</h4>
-                      <Badge variant="outline" className="text-xs">
+                <div className="w-full">
+                  <h4 className="font-semibold text-sm mb-2">{answer.questionTitle}</h4>
+                  
+                  <div className="flex gap-3 items-start mb-2">
+                    {answer.videoUrl && (
+                      <button
+                        className="w-32 h-24 bg-black/80 rounded-md flex items-center justify-center text-white flex-shrink-0"
+                        onClick={() => { 
+                          setPreviewUrl(answer.videoUrl!); 
+                          setPreviewTranscript(answer.transcript || null);
+                          setPreviewSource("existing"); 
+                          setIsPreviewOpen(true); 
+                        }}
+                      >
+                        <Play className="h-5 w-5" />
+                      </button>
+                    )}
+                    <div className="flex-1 flex flex-col gap-2">
+                      <Badge variant="outline" className="text-xs w-fit">
                         {answer.type}
                       </Badge>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(answer.timestamp).toLocaleDateString()} {new Date(answer.timestamp).toLocaleTimeString()}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(answer.timestamp).toLocaleTimeString()}
-                    </p>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  {answer.videoUrl && (
-                    <button
-                      className="w-full aspect-video bg-black/80 rounded-md flex items-center justify-center text-white mb-2"
-                      onClick={() => { 
-                        setPreviewUrl(answer.videoUrl!); 
-                        setPreviewTranscript(answer.transcript || null);
-                        setPreviewSource("existing"); 
-                        setIsPreviewOpen(true); 
-                      }}
-                    >
-                      <Play className="h-6 w-6 mr-2" />
-                      <span className="text-xs">View recorded video</span>
-                    </button>
-                  )}
+                  
                   {(answer.transcript || answer.answer) && (
-                    <div className="rounded-md bg-background p-2 border w-full max-h-40 overflow-y-auto">
+                    <div className="w-full rounded-md bg-background p-2 border max-h-40 overflow-y-auto">
+                      <p className="text-xs font-semibold mb-1 text-muted-foreground">Transcribed text</p>
                       <p className="text-sm whitespace-pre-wrap">
                         {answer.transcript || answer.answer || "No answer provided"}
                       </p>
@@ -228,23 +246,22 @@ export default function VoiceInputCard({ savedAnswers = [], onSaveVoiceAnswer, o
                 <div className="flex gap-2 flex-wrap">
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant={speakingAnswerIndex === index ? "destructive" : "outline"}
                     className="gap-2 text-xs"
-                    onClick={() => speakAnswer(answer.answer)}
-                    data-testid={`button-speak-${index}`}
+                    onClick={() => toggleSpeakAnswer(answer.transcript || answer.answer, index)}
+                    data-testid={`button-toggle-speak-${index}`}
                   >
-                    <Volume2 className="h-3 w-3" />
-                    Hear
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="gap-2 text-xs"
-                    onClick={stopSpeaking}
-                    data-testid={`button-stop-${index}`}
-                  >
-                    <StopCircle className="h-3 w-3" />
-                    Stop
+                    {speakingAnswerIndex === index ? (
+                      <>
+                        <StopCircle className="h-3 w-3" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="h-3 w-3" />
+                        Hear
+                      </>
+                    )}
                   </Button>
                   <Button
                     size="sm"

@@ -212,12 +212,12 @@ export default function InterviewRoom() {
   if (!currentInterviewSetup) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background flex flex-col">
       {/* <Navbar /> */}
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+      <main className="flex-1 lg:min-h-0 lg:overflow-hidden container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex flex-col">
         {/* Timer Header with Toggle Button */}
         {showTimer && (
-          <Card className="mb-4 sm:mb-6 border-l-4 border-l-primary">
+          <Card className="mb-3 sm:mb-4 border-l-4 border-l-primary flex-shrink-0">
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div className="flex items-center gap-3">
@@ -266,7 +266,7 @@ export default function InterviewRoom() {
         )}
 
         {/* Mobile Timer Toggle Button */}
-        <div className="flex justify-end mb-4 sm:hidden">
+        {/* <div className="flex justify-end mb-4 sm:hidden">
           <Button
             variant="outline"
             size="sm"
@@ -276,11 +276,11 @@ export default function InterviewRoom() {
             {showTimer ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             {showTimer ? "Hide Timer" : "Show Timer"}
           </Button>
-        </div>
+        </div> */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-4 sm:gap-6 min-h-0">
+        <div className="lg:flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-3 sm:gap-4">
           {/* Left Panel - Two equal height rows on desktop, stacked on mobile */}
-          <div className="flex flex-col gap-4 sm:gap-6 lg:h-[calc(100vh-140px)]">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:min-h-0">
             <div className="lg:flex-[0.5] lg:min-h-0">
               <CameraCard className="h-full min-h-[200px] sm:min-h-[250px] lg:min-h-0" onSaveVideoAnswer={handleSaveVideoAnswer} speechLang={(navigator.language || "en-US")} />
             </div>
@@ -300,12 +300,12 @@ export default function InterviewRoom() {
           </div>
 
           {/* Right Panel - Full height on desktop, auto on mobile */}
-          <div className="lg:h-[calc(100vh-140px)]">
-            <Card className="h-full min-h-[500px] sm:min-h-[600px]">
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 gap-2 sm:gap-0">
+          <div className="lg:min-h-0 lg:flex lg:flex-col">
+            <Card className="lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 gap-2 sm:gap-0 flex-shrink-0">
                 <CardTitle className="text-lg sm:text-xl">Interview Questions</CardTitle>
                 <div className="flex items-center gap-2 justify-end">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowTimer(!showTimer)}
@@ -313,7 +313,7 @@ export default function InterviewRoom() {
                   >
                     {showTimer ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     {showTimer ? "Hide Timer" : "Show Timer"}
-                  </Button>
+                  </Button> */}
                   <Button
                     size="sm"
                     variant="destructive"
@@ -324,38 +324,38 @@ export default function InterviewRoom() {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="h-[calc(100%-80px)] sm:h-[calc(100%-60px)]">
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="h-full">
-                  <TabsList className="grid w-full grid-cols-3">
+              <CardContent className="lg:flex-1 lg:min-h-0 lg:overflow-hidden">
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="lg:h-full lg:flex lg:flex-col">
+                  <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
                     <TabsTrigger value="technical" data-testid="tab-technical" className="text-xs sm:text-sm">Technical</TabsTrigger>
                     <TabsTrigger value="hr" data-testid="tab-hr" className="text-xs sm:text-sm">HR</TabsTrigger>
                     <TabsTrigger value="coding" data-testid="tab-coding" className="text-xs sm:text-sm">Coding</TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="technical" className="mt-3 sm:mt-4 h-[calc(100%-40px)] sm:h-[calc(100%-50px)]">
+                  <TabsContent value="technical" className="lg:flex-1 lg:min-h-0 mt-3 sm:mt-4">
                     <QuestionList
                       questions={questionsForTab}
                       selectedQuestionId={selectedQuestion?.id}
                       onSelectQuestion={handleQuestionSelect}
-                      className="h-full"
+                      className="lg:h-full"
                     />
                   </TabsContent>
 
-                  <TabsContent value="hr" className="mt-3 sm:mt-4 h-[calc(100%-40px)] sm:h-[calc(100%-50px)]">
+                  <TabsContent value="hr" className="lg:flex-1 lg:min-h-0 mt-3 sm:mt-4">
                     <QuestionList
                       questions={questionsForTab}
                       selectedQuestionId={selectedQuestion?.id}
                       onSelectQuestion={handleQuestionSelect}
-                      className="h-full"
+                      className="lg:h-full"
                     />
                   </TabsContent>
 
-                  <TabsContent value="coding" className="mt-3 sm:mt-4 h-[calc(100%-40px)] sm:h-[calc(100%-50px)]">
+                  <TabsContent value="coding" className="lg:flex-1 lg:min-h-0 mt-3 sm:mt-4">
                     <QuestionList
                       questions={questionsForTab}
                       selectedQuestionId={selectedQuestion?.id}
                       onSelectQuestion={handleQuestionSelect}
-                      className="h-full"
+                      className="lg:h-full"
                     />
                   </TabsContent>
                 </Tabs>
